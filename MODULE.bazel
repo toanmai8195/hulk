@@ -9,3 +9,18 @@ bazel_dep(name = "protobuf", version = "29.3")
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
 use_repo(go_deps, "com_github_gorilla_websocket", "com_github_prometheus_client_golang", "com_github_shirou_gopsutil")
+
+bazel_dep(name = "rules_kotlin", version = "2.1.0")
+bazel_dep(name = "rules_jvm_external", version = "6.3")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    artifacts = [
+        "io.vertx:vertx-core:4.5.13",
+        "io.vertx:vertx-web:4.5.13",
+    ],
+    repositories = [
+        "https://repo.maven.apache.org/maven2",
+    ],
+)
+use_repo(maven, "maven")
