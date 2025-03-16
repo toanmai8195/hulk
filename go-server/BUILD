@@ -1,7 +1,7 @@
 load("@rules_go//go:def.bzl", "go_binary","go_library")
 
 go_library(
-    name = "go_ws_lib",
+    name = "server_lib",
     srcs = [
         "main.go",
     ],
@@ -14,7 +14,7 @@ go_library(
 )
 
 go_binary(
-    name = "go_ws",
-    embed = [":go_ws_lib"],
+    name = "server",
+    embed = [":server_lib"],
     deps = [],
 )

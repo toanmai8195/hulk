@@ -4,7 +4,7 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
 
-class HelloVerticle : AbstractVerticle() {
+class KotlinServerVertical : AbstractVerticle() {
     override fun start() {
         val router = Router.router(vertx)
         
@@ -28,5 +28,5 @@ class HelloVerticle : AbstractVerticle() {
 
 fun main() {
     val vertx = Vertx.vertx()
-    vertx.deployVerticle(HelloVerticle())
+    vertx.deployVerticle(KotlinServerVertical())
 }
