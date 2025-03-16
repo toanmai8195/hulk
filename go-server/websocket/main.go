@@ -11,7 +11,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/shirou/gopsutil/cpu"
 )
 
 const (
@@ -158,12 +157,6 @@ func monitorMetrics() {
 		var memStats runtime.MemStats
 		runtime.ReadMemStats(&memStats)
 		memoryUsage.Set(float64(memStats.Alloc) / 1024 / 1024)
-
-		// Đo CPU
-		percent, _ := cpu.Percent(0, false)
-		if len(percent) > 0 {
-			cpuUsage.Set(percent[0]) // Set giá trị CPU
-		}
 
 		time.Sleep(5 * time.Second)
 	}
