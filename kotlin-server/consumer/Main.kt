@@ -17,8 +17,15 @@ fun main() {
 
     Future.all(
         listOf(
-            vertx.deployVerticle(ConsumerVertical("high-priority-topic", "high-priority-consumer", "high"), consumerOption),
-            vertx.deployVerticle(ConsumerVertical("low-priority-topic", "low-priority-consumer", "low"), consumerOption),
+            vertx.deployVerticle(MonitoringVerticle()),
+            vertx.deployVerticle(
+                ConsumerVertical("high-priority-topic", "high-priority-consumer", "high"),
+                consumerOption
+            ),
+            vertx.deployVerticle(
+                ConsumerVertical("low-priority-topic", "low-priority-consumer", "low"),
+                consumerOption
+            ),
             vertx.deployVerticle(HighPriorityWorkerVertical::class.java, workerOption),
             vertx.deployVerticle(LowPriorityWorkerVertical::class.java, workerOption),
         )

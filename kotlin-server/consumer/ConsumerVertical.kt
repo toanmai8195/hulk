@@ -1,5 +1,6 @@
 package com.tm.consumer
 
+import io.micrometer.core.instrument.Counter
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import io.vertx.core.eventbus.DeliveryOptions
@@ -14,6 +15,11 @@ import java.util.concurrent.Executors
 
 class ConsumerVertical(private val topic: String, private val groupId: String, private val priority: String) :
     AbstractVerticle() {
+    private val recordCounter: Counter = Counter.builder("kafka_consumer_records_total")
+        .description("Total number of records consumed from Kafka")
+        .tags("topic", topic)
+        .register(MonitoringVerticle.registry)
+
     private val consumer: KafkaConsumer<String, String>
     private val executor = Executors.newFixedThreadPool(if (priority == "high") 5 else 3)
 
@@ -58,6 +64,7 @@ class ConsumerVertical(private val topic: String, private val groupId: String, p
         vertx.setPeriodic(100) { id ->
             val records: ConsumerRecords<String, String> = consumer.poll(Duration.ofMillis(100))
             for (record in records) {
+                recordCounter.increment()
                 executor.submit {
                     eventBus.request<String>(
                         "${priority}_priority_worker",

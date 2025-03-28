@@ -43,14 +43,14 @@ fun main() = runBlocking {
     val highProducer = ChatMessageProducer("high-priority-topic")
     val lowProducer = ChatMessageProducer("low-priority-topic")
     val job1 = launch {
-        repeat(50) {
+        repeat(500) {
             highProducer.sendMessage("high", "[High] Message $it")
             delay(50)
         }
     }
 
     val job2 = launch {
-        repeat(50) {
+        repeat(5000) {
             lowProducer.sendMessage("low", "[Low] Message $it")
             delay(50)
         }

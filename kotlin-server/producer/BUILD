@@ -8,6 +8,7 @@ kt_jvm_library(
         "@maven//:io_vertx_vertx_web",
         "@maven//:org_apache_kafka_kafka_clients",
         "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
+        "@maven//:io_micrometer_micrometer_registry_prometheus",
         ],
     visibility = ["//visibility:public"],
 )
