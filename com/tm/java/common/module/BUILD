@@ -5,7 +5,7 @@ java_library(
     srcs = glob(["*.java"]),
     deps = [
         "@maven//:io_vertx_vertx_core",
-        "//plugins:dagger",
+        "//tools/plugins:dagger",
         "//com/tm/java/common/service/monitor",
         "//com/tm/java/common/service/deployment",
     ],

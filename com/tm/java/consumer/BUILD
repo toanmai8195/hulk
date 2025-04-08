@@ -6,8 +6,7 @@ java_library(
     name = "consumer_lib",
     srcs = glob(["*.java"]),
     deps = [
-        "//plugins:dagger",
-        "//plugins:autovalue",
+        "//tools/plugins:dagger",
         "@maven//:io_vertx_vertx_core",
         "@maven//:io_vertx_vertx_web",
         "//com/tm/java/common/module:module",

@@ -15,6 +15,5 @@ go_library(
 
 go_binary(
     name = "server",
-    embed = [":serverlo_lib"],
-    deps = [],
+    embed = [":server_lib"],
 )

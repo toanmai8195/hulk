@@ -179,4 +179,4 @@ func main() {
 	}
 }
 
-//bazel run //go-server/websocket:go_ws
+//bazel run //om/tm/go:server

@@ -8,7 +8,7 @@ java_library(
         "//com/tm/java/common/annotation",
         "@maven//:io_vertx_vertx_web",
         "@maven//:io_micrometer_micrometer_registry_prometheus",
-        "//plugins:dagger",
+        "//tools/plugins:dagger",
     ],
     visibility = ["//visibility:public"],
 )
