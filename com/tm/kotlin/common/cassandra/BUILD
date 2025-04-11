@@ -12,7 +12,7 @@ kt_jvm_library(
 
 kt_jvm_binary(
     name = "cassandra_test",
-    main_class = "com.tm.kotlin.cassandra.CassandraTestKt",
+    main_class = "com.tm.kotlin.common.cassandra.CassandraTestKt",
     deps = [],
     runtime_deps = [":cassandra_client"],
 )

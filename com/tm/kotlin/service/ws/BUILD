@@ -12,7 +12,7 @@ kt_jvm_library(
 
 kt_jvm_binary(
     name = "ws_server",
-    main_class = "com.tm.kotlin.ws.WsServerKt",
+    main_class = "com.tm.kotlin.service.ws.WsServerKt",
     deps = [],
     runtime_deps = [":ws_server_lib"],
 )

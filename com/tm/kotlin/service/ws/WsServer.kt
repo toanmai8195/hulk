@@ -1,4 +1,4 @@
-package com.tm.kotlin.ws
+package com.tm.kotlin.service.ws
 
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServerOptions

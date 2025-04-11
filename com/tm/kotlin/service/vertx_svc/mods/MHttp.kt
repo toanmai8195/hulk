@@ -1,4 +1,4 @@
-package com.tm.kotlin.service_framework.mods
+package com.tm.kotlin.service.vertx_svc.mods
 
 import com.tm.kotlin.common.http.API
 import com.tm.kotlin.common.http.HttpFactory

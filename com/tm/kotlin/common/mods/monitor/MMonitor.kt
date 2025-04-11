@@ -32,7 +32,7 @@ class MMonitor {
     ): Verticle {
         return httpFactory.create(
             "Monitor",
-            8080,
+            8088,
             listOf(
                 API(
                     HttpMethod.GET,

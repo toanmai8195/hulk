@@ -1,10 +1,7 @@
-package com.tm.kotlin.cassandra
+package com.tm.kotlin.common.cassandra
 
 import dagger.Component
 import javax.inject.Singleton
-
-class CassandraTest {
-}
 
 @Singleton
 @Component

@@ -1,4 +1,4 @@
-package com.tm.kotlin.service_framework
+package com.tm.kotlin.service.vertx_svc
 
 import com.tm.kotlin.common.mods.base.DeploymentService
 import dagger.Component

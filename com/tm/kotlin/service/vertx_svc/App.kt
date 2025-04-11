@@ -1,4 +1,4 @@
-package com.tm.kotlin.service_framework
+package com.tm.kotlin.service.vertx_svc
 
 fun main() {
     val component = DaggerAppComponent.create()

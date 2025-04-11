@@ -1,8 +1,8 @@
-package com.tm.kotlin.service_framework
+package com.tm.kotlin.service.vertx_svc
 
 import com.tm.kotlin.common.mods.base.MBase
 import com.tm.kotlin.common.mods.monitor.MMonitor
-import com.tm.kotlin.service_framework.mods.MHttp
+import com.tm.kotlin.service.vertx_svc.mods.MHttp
 import dagger.Module
 import dagger.Provides
 
