@@ -1,31 +1,48 @@
 version: '3.8'
+
 services:
-  zookeeper:
+  zookeeper-kafka:
     image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
+    container_name: zookeeper-kafka
     restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - "2181:2181"  # ZooKeeper cho Kafka
 
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
     restart: always
     depends_on:
-      - zookeeper
+      - zookeeper-kafka
     ports:
       - "9092:9092"
       - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper-kafka:2181"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  hbase:
+    image: harisekhon/hbase
+    platform: linux/amd64
+    hostname: hbase
+    container_name: com.tm.hbase
+    restart: unless-stopped
+    ports:
+      - "16000:16000"  # Master RPC
+      - "16010:16010"  # Master Web UI
+      - "16020:16020"  # RegionServer RPC
+      - "16030:16030"  # RegionServer Web UI
+      - "2182:2181"
+    volumes:
+      - hbase-data:/hbase-data
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -63,20 +80,7 @@ services:
       timeout: 10s
       retries: 5
 
-  hbase:
-    image: harisekhon/hbase:latest
-    container_name: hbase
-    ports:
-      - "16010:16010"   # HBase Web UI
-      - "2181:2181"     # Zookeeper
-      - "9090:9090"     # Thrift
-      - "8080:8080"     # REST API
-    environment:
-      - HBASE_MANAGES_ZK=true
-    volumes:
-      - hbase_data:/data
-
 volumes:
   grafana-storage:
   cassandra-data:
-  hbase_data:
+  hbase-data:
