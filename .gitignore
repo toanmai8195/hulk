@@ -34,3 +34,5 @@ bazel-*
 **/*.pb.go
 
 .ijwb
+
+com/tm/kotlin/gcp/iam/*.json

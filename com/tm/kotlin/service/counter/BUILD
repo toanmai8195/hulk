@@ -3,7 +3,8 @@ load("@rules_kotlin//kotlin:kotlin.bzl", "kt_jvm_library", "kt_jvm_binary")
 kt_jvm_library(
     name = "counter_svc_lib",
     srcs = glob([
-        "verticles/*.kt",
+        "verticles/friendbybitmap/*.kt",
+        "verticles/friendbycell/*.kt",
         "*.kt"
         ]),
     deps = [
@@ -13,6 +14,7 @@ kt_jvm_library(
         "//com/tm/kotlin/common/hbase:hbase_client",
          "//com/tm/kotlin/common/mods/base",
          "//com/tm/kotlin/common/utils",
+         "//com/tm/kotlin/common/mods/monitor",
     ],
     visibility = ["//visibility:public"],
 )

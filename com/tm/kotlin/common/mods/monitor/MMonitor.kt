@@ -2,6 +2,7 @@ package com.tm.kotlin.common.mods.monitor
 
 import com.tm.kotlin.common.http.API
 import com.tm.kotlin.common.http.HttpFactory
+import com.tm.kotlin.common.http.MHttpFactory
 import com.tm.kotlin.common.mods.base.MBase
 import dagger.Module
 import dagger.Provides
@@ -11,14 +12,17 @@ import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.vertx.core.Verticle
 import io.vertx.core.http.HttpMethod
+import javax.inject.Singleton
 
 @Module(
     includes = [
-        MBase::class
+        MBase::class,
+        MHttpFactory::class
     ]
 )
 class MMonitor {
     @Provides
+    @Singleton
     fun providePrometheusMeterRegistry(): PrometheusMeterRegistry {
         return PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     }

@@ -12,7 +12,7 @@ class HBaseClient @AssistedInject constructor(
     @Assisted private val tableName: String
 ) : IHBaseClient {
     companion object {
-        private const val LIMIT_COLUMNS_PER_FAMILY = 1000
+        private const val LIMIT_COLUMNS_PER_FAMILY = 10000
         private const val LIMIT_ROWS_PER_SCAN = 100
     }
 
