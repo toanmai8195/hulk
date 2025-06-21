@@ -1,12 +1,12 @@
 package main
 
 import (
+	"com.tm.go/lib/model/ws_model"
 	"encoding/json"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"sync"
-
-	"github.com/gorilla/websocket"
 )
 
 const (
@@ -19,26 +19,10 @@ var (
 	upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
-	connections = make(map[string]*Client)
+	connections = make(map[string]*ws_model.Client)
 	mutex       sync.RWMutex
-	broadcast   = make(chan *Request, ChannelBufSize)
+	broadcast   = make(chan *ws_model.Request, ChannelBufSize)
 )
-
-// Define object
-type Client struct {
-	Conn  *websocket.Conn
-	Mutex sync.Mutex
-}
-
-type Request struct {
-	Caller  string
-	Payload string `json:"payload"`
-}
-
-type Response struct {
-	Receiver string
-	Payload  string `json:"payload"`
-}
 
 func main() {
 	http.HandleFunc("/go/ws", handler)
@@ -76,7 +60,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	connections[clientID] = &Client{Conn: conn}
+	connections[clientID] = &ws_model.Client{Conn: conn}
 	mutex.Unlock()
 
 	log.Printf("Client %s connected", clientID)
@@ -88,7 +72,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		event := &Request{}
+		event := &ws_model.Request{}
 		if err := json.Unmarshal(msg, event); err != nil {
 			log.Println("Failed to parse event:", err)
 			continue
@@ -121,7 +105,7 @@ func worker() {
 
 		log.Printf("Receive from client %s : %s ", event.Caller, event.Payload)
 
-		response := Response{
+		response := ws_model.Response{
 			Receiver: event.Caller,
 			Payload:  event.Payload,
 		}
@@ -132,7 +116,7 @@ func worker() {
 			continue
 		}
 
-		go func(client *Client, msg []byte) {
+		go func(client *ws_model.Client, msg []byte) {
 			client.Mutex.Lock()
 			defer client.Mutex.Unlock()
 

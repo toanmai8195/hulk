@@ -1,11 +1,11 @@
 package main
 
 import (
+	"com.tm.go/lib/model/ws_model"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 const (
@@ -13,15 +13,6 @@ const (
 	clientID   = "client-123"
 	payloadMsg = "Hello from Go WebSocket client!"
 )
-
-type Request struct {
-	Payload string `json:"payload"`
-}
-
-type Response struct {
-	Receiver string `json:"receiver"`
-	Payload  string `json:"payload"`
-}
 
 func main() {
 	header := http.Header{}
@@ -34,7 +25,7 @@ func main() {
 	defer conn.Close()
 	log.Println("Connected to WebSocket server as", clientID)
 
-	request := Request{Payload: payloadMsg}
+	request := ws_model.Request{Payload: payloadMsg}
 
 	go func() {
 		for {
@@ -49,7 +40,7 @@ func main() {
 
 	go func() {
 		for {
-			var response Response
+			var response ws_model.Response
 			if err := conn.ReadJSON(&response); err != nil {
 				log.Println("ReadJSON error:", err)
 				return
