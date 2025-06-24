@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.tm.go.model.grpc;
+
+option go_package = "com.tm.go/model/grpc/message";
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string greeting = 1;
+}

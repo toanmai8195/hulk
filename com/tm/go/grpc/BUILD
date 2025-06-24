@@ -9,6 +9,8 @@ go_library(
     deps = [
         "@com_github_prometheus_client_golang//prometheus",
         "@com_github_prometheus_client_golang//prometheus/promhttp",
+        "//com/tm/go/lib/model/grpc:message_go_proto",
+        "//com/tm/go/lib/model/grpc:message_go_grpc",
     ],
 )
 
