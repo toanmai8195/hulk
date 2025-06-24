@@ -1,13 +1,15 @@
 syntax = "proto3";
 
-package com.tm.go.model.grpc;
+package grpc.event;
 
-option go_package = "com.tm.go/model/grpc/message";
+service HelloService {
+  rpc SayHello(HelloRequest) returns (HelloResponse);
+}
 
 message HelloRequest {
   string name = 1;
 }
 
 message HelloResponse {
-  string greeting = 1;
+  string message = 1;
 }
