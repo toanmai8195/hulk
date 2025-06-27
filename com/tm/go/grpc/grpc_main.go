@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"time"
 
 	pb "com.tm.go/model/grpc/message"
 	"google.golang.org/grpc"
@@ -14,6 +15,7 @@ type server struct {
 }
 
 func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
+	time.Sleep(50 * time.Millisecond)
 	return &pb.HelloResponse{Message: "Hello, " + req.Name}, nil
 }
 

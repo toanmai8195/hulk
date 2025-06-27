@@ -20,7 +20,7 @@ func main() {
 
 	go func() {
 		for {
-			time.Sleep(1 * time.Second)
+			time.Sleep(1 * time.Millisecond)
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
 			cancel()
@@ -32,6 +32,36 @@ func main() {
 			log.Printf("Response from server: %s", resp.Message)
 		}
 	}()
+
+	// go func() {
+	// 	for {
+	// 		time.Sleep(1 * time.Millisecond)
+	// 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	// 		resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
+	// 		cancel()
+
+	// 		if err != nil {
+	// 			log.Printf("could not greet: %v", err)
+	// 			continue
+	// 		}
+	// 		log.Printf("Response from server: %s", resp.Message)
+	// 	}
+	// }()
+
+	// go func() {
+	// 	for {
+	// 		time.Sleep(1 * time.Millisecond)
+	// 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	// 		resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
+	// 		cancel()
+
+	// 		if err != nil {
+	// 			log.Printf("could not greet: %v", err)
+	// 			continue
+	// 		}
+	// 		log.Printf("Response from server: %s", resp.Message)
+	// 	}
+	// }()
 
 	select {}
 }

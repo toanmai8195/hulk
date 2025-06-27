@@ -80,6 +80,19 @@ services:
       timeout: 10s
       retries: 5
 
+  grpc_server:
+    image: com.tm.go.grpc_server:v1.0.0
+    ports:
+      - "1995:1995"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 6M
+        reservations:
+          cpus: "0.1"
+          memory: 6M
+
 volumes:
   grafana-storage:
   cassandra-data:
