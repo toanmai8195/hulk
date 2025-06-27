@@ -1,20 +1,16 @@
-load("@rules_go//go:def.bzl", "go_binary","go_library")
+load("//tools/rules:com_tm_container.bzl", "com_tm_go_image")
 
-go_library(
-    name = "grpc_lib",
+com_tm_go_image(
+    name = "grpc_server",
+    package_name = package_name(),
     srcs = [
         "grpc_main.go",
     ],
-    visibility = ["//visibility:public"],
+    exposedPorts = ["1995"],
     deps = [
+        "//com/tm/go/lib/model/grpc:message_go_grpc",
         "@com_github_prometheus_client_golang//prometheus",
         "@com_github_prometheus_client_golang//prometheus/promhttp",
-        "//com/tm/go/lib/model/grpc:message_go_grpc",
         "@org_golang_google_grpc//:go_default_library",
     ],
-)
-
-go_binary(
-    name = "grpc",
-    embed = [":grpc_lib"],
 )

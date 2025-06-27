@@ -9,6 +9,19 @@ bazel_dep(name = "protobuf", version = "29.3")
 go_sdk_ext = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk_ext.download(name = "go_sdk", version = "1.24.1")
 use_repo(go_sdk_ext, "go_sdk")
+bazel_dep(name = "rules_oci", version = "2.2.6")
+bazel_dep(name = "tar.bzl", version = "0.3.0")
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "distroless_base",
+    digest = "sha256:611d30d7f6d9992c37b1e1a212eefdf1f7c671deb56db3707e24eb01da8c4c2a",
+    image = "gcr.io/distroless/base",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64/v8",
+    ],
+)
+use_repo(oci, "distroless_base")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
