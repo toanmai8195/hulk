@@ -9,6 +9,11 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	numClients = 20                   // Số lượng goroutine song song
+	delay      = 1 * time.Millisecond // Thời gian giữa các request mỗi goroutine
+)
+
 func main() {
 	conn, err := grpc.Dial("localhost:1995", grpc.WithInsecure())
 	if err != nil {
@@ -18,50 +23,25 @@ func main() {
 
 	client := pb.NewHelloServiceClient(conn)
 
-	go func() {
-		for {
-			time.Sleep(1 * time.Millisecond)
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-			resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
-			cancel()
-
-			if err != nil {
-				log.Printf("could not greet: %v", err)
-				continue
-			}
-			log.Printf("Response from server: %s", resp.Message)
-		}
-	}()
-
-	// go func() {
-	// 	for {
-	// 		time.Sleep(1 * time.Millisecond)
-	// 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	// 		resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
-	// 		cancel()
-
-	// 		if err != nil {
-	// 			log.Printf("could not greet: %v", err)
-	// 			continue
-	// 		}
-	// 		log.Printf("Response from server: %s", resp.Message)
-	// 	}
-	// }()
-
-	// go func() {
-	// 	for {
-	// 		time.Sleep(1 * time.Millisecond)
-	// 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	// 		resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
-	// 		cancel()
-
-	// 		if err != nil {
-	// 			log.Printf("could not greet: %v", err)
-	// 			continue
-	// 		}
-	// 		log.Printf("Response from server: %s", resp.Message)
-	// 	}
-	// }()
+	for i := 0; i < numClients; i++ {
+		go runClient(client, i)
+	}
 
 	select {}
+}
+
+func runClient(client pb.HelloServiceClient, id int) {
+	for {
+		time.Sleep(delay)
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Toàn"})
+		cancel()
+
+		if err != nil {
+			log.Printf("[Client %d] could not greet: %v", id, err)
+			continue
+		}
+		log.Printf("[Client %d] Response: %s", id, resp.Message)
+	}
 }
