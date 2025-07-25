@@ -10,44 +10,63 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import org.apache.hadoop.hbase.client.Get
-import org.apache.hadoop.hbase.util.Bytes
+import org.roaringbitmap.RoaringBitmap
+import java.io.ByteArrayInputStream
+import java.io.DataInputStream
 import javax.inject.Inject
 
 class VCheckFriendBitMap @Inject constructor(
     private val hBaseClient: IHBaseClient,
     private val registry: PrometheusMeterRegistry
 ) : AbstractVerticle() {
-    private val getTotalFriendsCounter: Counter = Counter.builder("total_friend_by_bitmap_counter")
-        .description("Number of getTotalFriends calls")
+    private val counterMetric: Counter = Counter.builder("check_friend_by_bitmap_counter")
+        .description("Number of check friend calls")
         .register(registry)
 
-    private val getTotalFriendsTimer = Timer
-        .builder("total_friend_by_bitmap_latency")
-        .description("Latency of getTotalFriends calls")
+    private val timerMetric = Timer
+        .builder("check_friend_by_bitmap_latency")
+        .description("Latency of check friend calls")
+        .publishPercentiles(0.5, 0.9, 0.95, 0.99)
+        .publishPercentileHistogram()
         .register(registry)
 
     override fun start(startPromise: Promise<Void>) {
         startPromise.complete()
         vertx.setPeriodic((1000 / RPS).toLong()) {
             CounterMain.executor.execute {
-                getTotalFriendsCounter.increment()
-                getTotalFriends(BITMAP_ACTOR)
+                counterMetric.increment()
+                val randomPhone = "0101000" + String.format("%04d", (0..7000).random())
+                println("BITMAP: $BITMAP_ACTOR & $randomPhone=${checkFriend(BITMAP_ACTOR, randomPhone)}")
             }
         }
     }
 
-    private fun getTotalFriends(actor: String): Int {
-        return getTotalFriendsTimer.record<Int> {
-            val rs = hBaseClient.get(Get(genRowKey(actor).toByteArray()))
-            val total = Bytes.toInt(rs.getValue("df".toByteArray(), "total".toByteArray()))
-            registry.summary("friend_size", "source", this::class.simpleName).record(total.toDouble())
-            total
+    private fun checkFriend(actor: String, partner: String): Boolean {
+        return timerMetric.record<Boolean> {
+            val actorFriendsRs = hBaseClient.get(Get(genRowKey(actor).toByteArray()))
+
+            val bitmapOfActor = actorFriendsRs.getValue(
+                "df".toByteArray(),
+                "bitmap".toByteArray()
+            ).toBitmap()
+
+            registry.summary("friend_size", "source", this::class.simpleName).record(bitmapOfActor.count().toDouble())
+
+            bitmapOfActor.contains(partner.removePrefix("0").toInt())
         }
     }
 
 
     private fun genRowKey(actor: String): String {
         return actor.reversed()
+    }
+
+    private fun ByteArray.toBitmap(): RoaringBitmap {
+        val byteArrayInputStream = ByteArrayInputStream(this)
+        val dataInputStream = DataInputStream(byteArrayInputStream)
+        val bitmap = RoaringBitmap()
+        bitmap.deserialize(dataInputStream)
+        return bitmap
     }
 
     override fun stop(stopPromise: Promise<Void>) {

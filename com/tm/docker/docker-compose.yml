@@ -100,6 +100,53 @@ services:
           cpus: "1"
           memory: 256M
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  counter_service:
+    image: com.tm.java.counter_service:v1.0.2
+    ports:
+      - "1995:1995"
+      - "2112:2112"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+        reservations:
+          cpus: "1"
+          memory: 256M
+
+  image_service:
+    image: com.tm.java.image_service:v1.0.1
+    ports:
+      - "1995:1995"
+      - "2112:2112"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+        reservations:
+          cpus: "1"
+          memory: 256M
+
 volumes:
   grafana-storage:
   cassandra-data:

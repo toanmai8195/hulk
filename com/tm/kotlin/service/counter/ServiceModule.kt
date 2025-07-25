@@ -5,10 +5,13 @@ import com.tm.kotlin.common.hbase.HBaseFactory
 import com.tm.kotlin.common.hbase.IHBaseClient
 import com.tm.kotlin.common.mods.monitor.MMonitor
 import com.tm.kotlin.service.counter.verticles.friendbybitmap.VAddFriendBitMap
+import com.tm.kotlin.service.counter.verticles.friendbybitmap.VCheckFriendBitMap
 import com.tm.kotlin.service.counter.verticles.friendbybitmap.VGetMutualFriendBitmap
 import com.tm.kotlin.service.counter.verticles.friendbybitmap.VGetTotalMutualFriendBitmap
 import com.tm.kotlin.service.counter.verticles.friendbybitmap.VGetTotalFriendBitMap
+import com.tm.kotlin.service.counter.verticles.friendbybitmap.VSizeBitmapTest
 import com.tm.kotlin.service.counter.verticles.friendbycell.VAddFriendByCell
+import com.tm.kotlin.service.counter.verticles.friendbycell.VCheckFriendByCell
 import com.tm.kotlin.service.counter.verticles.friendbycell.VGetMutualFriendCell
 import com.tm.kotlin.service.counter.verticles.friendbycell.VGetTotalFriendByCell
 import com.tm.kotlin.service.counter.verticles.friendbycell.VGetTotalMutualFriendCell
@@ -45,7 +48,7 @@ class ServiceModule {
     fun provideHBaseConfig(): Configuration {
         val config: Configuration = HBaseConfiguration.create()
         config.set("hbase.zookeeper.quorum", "hbase")
-        config.set("hbase.zookeeper.property.clientPort", "2182")
+        config.set("hbase.zookeeper.property.clientPort", "2181")
         return config
     }
 
@@ -55,13 +58,13 @@ class ServiceModule {
 //    fun provideVAddFriendByCell(verticle: VAddFriendByCell): Verticle {
 //        return verticle
 //    }
-
-    @Provides
-    @IntoMap
-    @StringKey(value = "VAddFriendBitMap")
-    fun provideVAddFriendBitMap(verticle: VAddFriendBitMap): Verticle {
-        return verticle
-    }
+//
+//    @Provides
+//    @IntoMap
+//    @StringKey(value = "VAddFriendBitMap")
+//    fun provideVAddFriendBitMap(verticle: VAddFriendBitMap): Verticle {
+//        return verticle
+//    }
 //
 //
 //    @Provides
@@ -105,4 +108,25 @@ class ServiceModule {
 //    fun provideVGetMutualFriendBitmap(verticle: VGetMutualFriendBitmap): Verticle {
 //        return verticle
 //    }
+//
+//    @Provides
+//    @IntoMap
+//    @StringKey(value = "VCheckFriendByCell")
+//    fun provideVCheckFriendByCell(verticle: VCheckFriendByCell): Verticle {
+//        return verticle
+//    }
+//
+//    @Provides
+//    @IntoMap
+//    @StringKey(value = "VCheckFriendBitMap")
+//    fun provideVCheckFriendBitMap(verticle: VCheckFriendBitMap): Verticle {
+//        return verticle
+//    }
+
+    @Provides
+    @IntoMap
+    @StringKey(value = "VSizeBitmapTest")
+    fun provideVSizeBitmapTest(verticle: VSizeBitmapTest): Verticle {
+        return verticle
+    }
 }

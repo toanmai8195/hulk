@@ -27,16 +27,28 @@ oci.pull(
         "linux/arm64/v8",
     ],
 )
+oci.pull(
+    name = "distroless_java",
+    digest = "sha256:7c05bf8a64ff1a70a16083e9bdd35b463aa0d014c2fc782d31d13ea7a61de633",
+    image = "gcr.io/distroless/java21-debian12",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64/v8",
+    ],
+    tag = "latest",
+)
+use_repo(oci, "distroless_java", "distroless_java_linux_amd64", "distroless_java_linux_arm64_v8")
 use_repo(oci, "distroless_base", "distroless_base_linux_amd64", "distroless_base_linux_arm64_v8")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
-use_repo(go_deps, "com_github_gorilla_websocket", "com_github_grpc_ecosystem_go_grpc_prometheus", "com_github_prometheus_client_golang", "org_golang_google_grpc")
+use_repo(go_deps, "com_github_confluentinc_confluent_kafka_go", "com_github_elastic_go_elasticsearch_v8", "com_github_gorilla_websocket", "com_github_grpc_ecosystem_go_grpc_prometheus", "com_github_prometheus_client_golang", "org_golang_google_grpc")
 
 #Java/kotlin
 bazel_dep(name = "rules_kotlin", version = "2.1.0")
 bazel_dep(name = "rules_jvm_external", version = "6.3")
 bazel_dep(name = "rules_java", version = "8.11.0")
+bazel_dep(name = "rules_proto_grpc_java", version = "5.3.0")
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 maven.install(
@@ -66,6 +78,7 @@ maven.install(
         "com.google.cloud:google-cloud-storage:2.50.0",
         "com.google.api:gax-grpc:2.35.0",
         "com.opencsv:opencsv:5.10",
+        "io.grpc:grpc-protobuf:1.73.0",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",

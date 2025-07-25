@@ -24,6 +24,8 @@ class VGetTotalFriendBitMap @Inject constructor(
     private val getTotalFriendsTimer = Timer
         .builder("total_friend_by_bitmap_latency")
         .description("Latency of getTotalFriends calls")
+        .publishPercentiles(0.5, 0.9, 0.95, 0.99)
+        .publishPercentileHistogram()
         .register(registry)
 
     override fun start(startPromise: Promise<Void>) {

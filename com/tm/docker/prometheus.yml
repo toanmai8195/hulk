@@ -12,4 +12,12 @@ scrape_configs:
 
   - job_name: 'grpc_server'
     static_configs:
-      - targets: ['grpc_server:2112'] 
+      - targets: ['grpc_server:2112']
+
+#  - job_name: 'local_monitor'
+#    static_configs:
+#      - targets: [ 'host.docker.internal:8088' ]
+
+  - job_name: 'counter_docker'
+    static_configs:
+      - targets: [ 'counter_service:8088' ]

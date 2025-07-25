@@ -19,3 +19,5 @@
         <value>file:///opt/hbase/data</value>
     </property>
 </configuration>
+
+<!--        docker volume rm docker_hbase-data-->

@@ -82,6 +82,7 @@ class VAddFriendBitMap @Inject constructor(
         val dataOutputStream = DataOutputStream(byteArrayOutputStream)
         this.serialize(dataOutputStream)
         return byteArrayOutputStream.toByteArray()
+        Int.MAX_VALUE
     }
 
     override fun stop(stopPromise: Promise<Void>) {

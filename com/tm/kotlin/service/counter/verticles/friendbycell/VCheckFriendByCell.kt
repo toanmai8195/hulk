@@ -17,7 +17,7 @@ import kotlin.collections.component2
 
 class VCheckFriendByCell @Inject constructor(
     private val hBaseClient: IHBaseClient,
-    private val registry: PrometheusMeterRegistry
+    registry: PrometheusMeterRegistry
 ) : AbstractVerticle() {
     private val counterMetric: Counter = Counter.builder("check_friend_by_cell_counter")
         .description("Number of getTotalFriends calls")
@@ -26,6 +26,8 @@ class VCheckFriendByCell @Inject constructor(
     private val timerMetric = Timer
         .builder("check_friend_by_cell_latency")
         .description("Latency of getTotalFriends calls")
+        .publishPercentiles(0.5, 0.9, 0.95, 0.99)
+        .publishPercentileHistogram()
         .register(registry)
 
     override fun start(startPromise: Promise<Void>) {
@@ -33,7 +35,8 @@ class VCheckFriendByCell @Inject constructor(
         vertx.setPeriodic((1000 / RPS).toLong()) {
             CounterMain.executor.execute {
                 counterMetric.increment()
-                checkFriend(CELL_ACTOR, "01010005000")
+                val randomPhone = "0101000" + String.format("%04d", (0..7000).random())
+                println("CELL: $CELL_ACTOR & $randomPhone=${checkFriend(CELL_ACTOR, randomPhone)}")
             }
         }
     }

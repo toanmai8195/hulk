@@ -5,7 +5,6 @@ kt_jvm_library(
     srcs = glob(["*.kt"]),
     deps = [
         "@maven//:io_vertx_vertx_core",
-        "@maven//:io_vertx_vertx_web",
     ],
     visibility = ["//visibility:public"],
 )

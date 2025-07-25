@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package grpc.event;
+package com.tm.kotlin.models.grpc;
 
 service HelloService {
   rpc SayHello(HelloRequest) returns (HelloResponse);

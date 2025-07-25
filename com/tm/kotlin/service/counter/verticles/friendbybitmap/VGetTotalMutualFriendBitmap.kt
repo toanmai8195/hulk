@@ -28,6 +28,8 @@ class VGetTotalMutualFriendBitmap @Inject constructor(
     private val getTotalMutualFriendsTimer = Timer
         .builder("total_mutual_friend_by_bitmap_latency")
         .description("Latency of getMutualFriends calls")
+        .publishPercentiles(0.5, 0.9, 0.95, 0.99)
+        .publishPercentileHistogram()
         .register(registry)
 
     private val payloadSizeSummary: DistributionSummary = DistributionSummary

@@ -27,6 +27,8 @@ class VGetMutualFriendCell @Inject constructor(
     private val getMutualFriendsTimer = Timer
         .builder("mutual_friend_by_cell_latency")
         .description("Latency of getMutualFriends cells")
+        .publishPercentiles(0.5, 0.9, 0.95, 0.99)
+        .publishPercentileHistogram()
         .register(registry)
 
     override fun start(startPromise: Promise<Void>) {
