@@ -16,8 +16,20 @@ docker compose up -d grafana
 #echo "🐳 Running docker-compose grpc_server..."
 #docker compose up -d grpc_server
 
-echo "🔥 Building image with Bazel..."
-bazel run //com/tm/kotlin/service/counter:counter_image_load
+#echo "🔥 Building image with Bazel..."
+#bazel run //com/tm/kotlin/service/counter:counter_image_load
+#
+#echo "🐳 Running docker-compose counter_service..."
+#docker compose up -d counter_service
 
-echo "🐳 Running docker-compose counter_service..."
-docker compose up -d counter_service
+echo "🔥 Building image with Bazel..."
+bazel run //com/tm/kotlin/service/coroutine/httpserver:httpserver_image_load
+
+echo "🔥 Building image with Bazel..."
+bazel run //com/tm/kotlin/service/coroutine/httpclient:httpclient_image_load
+
+echo "🐳 Running docker-compose httpserver_coroutine..."
+docker compose up -d httpserver_coroutine
+
+echo "🐳 Running docker-compose httpclient_coroutine..."
+docker compose up -d httpclient_coroutine

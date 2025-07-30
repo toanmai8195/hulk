@@ -147,6 +147,31 @@ services:
           cpus: "1"
           memory: 256M
 
+  httpserver_coroutine:
+    image: com.tm.java.httpserver_coroutine:v1.0.0
+    ports:
+      - "1998:1998"
+      - "2112:2112"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+        reservations:
+          cpus: "1"
+          memory: 256M
+
+  httpclient_coroutine:
+    image: com.tm.java.httpclient_coroutine:v1.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+        reservations:
+          cpus: "1"
+          memory: 256M
+
 volumes:
   grafana-storage:
   cassandra-data:

@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/toanmai8195/confluent-kafka-go/kafka"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 var msgChan = make(chan *kafka.Message, 100)

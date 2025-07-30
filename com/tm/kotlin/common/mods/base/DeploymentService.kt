@@ -33,5 +33,17 @@ class DeploymentService @Inject constructor(
                 rs.cause().printStackTrace()
             }
         }
+
+        Runtime.getRuntime().addShutdownHook(Thread {
+            println("Shutdown hook triggered. Closing Vert.x...")
+            vertx.close().onComplete { ar ->
+                if (ar.succeeded()) {
+                    println("Vert.x closed.")
+                } else {
+                    println("Error closing Vert.x: ${ar.cause().message}")
+                }
+            }
+        })
+
     }
 }
