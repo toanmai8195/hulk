@@ -172,6 +172,21 @@ services:
           cpus: "1"
           memory: 256M
 
+  checkfriends:
+    image: com.tm.go.checkfriends:v1.0.0
+    container_name: checkfriends-app
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+        reservations:
+          cpus: "1"
+          memory: 256M
+    restart: unless-stopped
+
 volumes:
   grafana-storage:
   cassandra-data:

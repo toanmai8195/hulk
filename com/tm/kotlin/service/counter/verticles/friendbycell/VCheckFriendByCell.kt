@@ -46,6 +46,11 @@ class VCheckFriendByCell @Inject constructor(
             val get = Get(genRowKey(actor).toByteArray())
             val rs = hBaseClient.get(get)
 
+            rs.getFamilyMap("df".toByteArray())
+                .forEach { entry ->
+                    println("${Bytes.toString(entry.key)}")
+                }
+
             return@record rs.getFamilyMap("df".toByteArray())
                 .map { (qualifier, _) ->
                     Bytes.toString(qualifier)
