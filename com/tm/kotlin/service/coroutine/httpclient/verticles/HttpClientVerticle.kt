@@ -28,8 +28,8 @@ class HttpClientVerticle @Inject constructor(
     private fun generateRandomPair(): Pair<String, String> {
         val ids = (0..9999).shuffled().take(2)
         return Pair(
-            "0165000${"%04d".format(ids[0])}",
-            "0165000${"%04d".format(ids[1])}"
+            "0166000${"%04d".format(ids[0])}",
+            "0166000${"%04d".format(ids[1])}"
         )
     }
 
@@ -40,7 +40,7 @@ class HttpClientVerticle @Inject constructor(
 
         try {
 //            val response = client.post(1998, "localhost", "/mutual-check")
-            val response = client.post(1995, "httpserver_coroutine", "/mutual-check/by-cell")
+            val response = client.post(1998, "httpserver_coroutine", "/mutual-check")
                 .putHeader("Content-Type", "application/json")
                 .sendJsonObject(requestBody)
                 .await()

@@ -1,4 +1,4 @@
-package com.tm.kotlin.service.coroutine.httpserver.verticles
+package com.tm.kotlin.common.http.tracking
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Timer
@@ -31,7 +31,7 @@ class Tracking @Inject constructor(
                 .register(registry)
         }
 
-    internal suspend fun <T> track(endpoint: String, block: suspend () -> T): T {
+    suspend fun <T> track(endpoint: String, block: suspend () -> T): T {
         getOrCreateCounter(endpoint).increment()
         val sample = Timer.start(registry)
         val result = block()

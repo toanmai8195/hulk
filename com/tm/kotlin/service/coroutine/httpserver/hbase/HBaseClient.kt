@@ -29,7 +29,7 @@ class HBaseClient @Inject constructor() {
     init {
         val config: Configuration = HBaseConfiguration.create()
         config.set("hbase.zookeeper.quorum", "hbase")
-        config.set("hbase.zookeeper.property.clientPort", "2181")
+        config.set("hbase.zookeeper.property.clientPort", "2182")
         connection = ConnectionFactory.createConnection(config)
         table = connection.getTable(TableName.valueOf(TABLE_NAME))
     }

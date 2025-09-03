@@ -1,0 +1,12 @@
+langchain
+langchain-community
+langchain-groq
+langchain-huggingface
+python-dotenv
+pydantic-settings
+faiss-cpu
+happybase
+requests
+thriftpy2
+ply
+six

@@ -52,19 +52,12 @@ def com_tm_go_image(name, package_name, srcs, deps = [], importpath = "", expose
         ),
     )
 
-    native.genrule(
-        name = name + "_created",
-        outs = [name + "_created.txt"],
-        cmd = "bash -c 'echo -n $$(date -u +%Y-%m-%dT%H:%M:%SZ) > $@'",
-    )
-
     oci_image(
         name = image_name,
         base = "@distroless_base",
         entrypoint = ["/" + docker_bin_name],
         tars = [":" + tar_name],
         exposed_ports = exposedPorts,
-        created = ":" + name + "_created.txt",
     )
 
     oci_load(

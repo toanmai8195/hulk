@@ -11,6 +11,7 @@ kt_jvm_library(
         "@maven//:io_vertx_vertx_web",
         "@maven//:io_vertx_vertx_core",
         "@maven//:io_micrometer_micrometer_registry_prometheus",
+        "//com/tm/kotlin/common/http/tracking",
     ],
     visibility = ["//visibility:public"],
 )

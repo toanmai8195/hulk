@@ -5,8 +5,6 @@ import com.tm.kotlin.common.hbase.HBaseFactory
 import com.tm.kotlin.common.hbase.IHBaseClient
 import com.tm.kotlin.common.mods.monitor.MMonitor
 import com.tm.kotlin.service.counter.verticles.friendbybitmap.VSizeBitmapTest
-import com.tm.kotlin.service.counter.verticles.friendbycell.VAddFriendByCell
-import com.tm.kotlin.service.counter.verticles.friendbycell.VCheckFriendByCell
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
@@ -38,16 +36,16 @@ class ServiceModule {
     fun provideHBaseConfig(): Configuration {
         val config: Configuration = HBaseConfiguration.create()
         config.set("hbase.zookeeper.quorum", "hbase")
-        config.set("hbase.zookeeper.property.clientPort", "2182")
+        config.set("hbase.zookeeper.property.clientPort", "2181")
         return config
     }
 
-    @Provides
-    @IntoMap
-    @StringKey(value = "VAddFriendByCell")
-    fun provideVAddFriendByCell(verticle: VAddFriendByCell): Verticle {
-        return verticle
-    }
+//    @Provides
+//    @IntoMap
+//    @StringKey(value = "VAddFriendByCell")
+//    fun provideVAddFriendByCell(verticle: VAddFriendByCell): Verticle {
+//        return verticle
+//    }
 //
 //    @Provides
 //    @IntoMap
@@ -113,10 +111,10 @@ class ServiceModule {
 //        return verticle
 //    }
 
-//    @Provides
-//    @IntoMap
-//    @StringKey(value = "VSizeBitmapTest")
-//    fun provideVSizeBitmapTest(verticle: VSizeBitmapTest): Verticle {
-//        return verticle
-//    }
+    @Provides
+    @IntoMap
+    @StringKey(value = "VSizeBitmapTest")
+    fun provideVSizeBitmapTest(verticle: VSizeBitmapTest): Verticle {
+        return verticle
+    }
 }

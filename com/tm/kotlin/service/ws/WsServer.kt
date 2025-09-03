@@ -4,13 +4,6 @@ import java.io.File
 import java.io.FileWriter
 
 fun main() {
-    try {
-        Test.test()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-
     val path = "example.txt"
     writeToFile(path, listOf("Hello", "World"))
     readLargeFileLineByLine(path)

@@ -13,3 +13,10 @@ kt_jvm_binary(
     deps = [],
     runtime_deps = [":user_session_lib"],
 )
+
+kt_jvm_binary(
+    name = "relationship_id",
+    main_class = "com.tm.kotlin.service.user_session.RelationshipIDMainKt",
+    deps = [],
+    runtime_deps = [":user_session_lib"],
+)

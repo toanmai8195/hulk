@@ -2,6 +2,7 @@ package com.tm.kotlin.service.coroutine.httpserver.verticles
 
 import com.tm.kotlin.common.error.ErrorCode
 import com.tm.kotlin.common.error.HulkException
+import com.tm.kotlin.common.http.tracking.Tracking
 import com.tm.kotlin.service.coroutine.httpserver.handler.FriendByCellGenerate
 import com.tm.kotlin.service.coroutine.httpserver.handler.FriendGenerate
 import com.tm.kotlin.service.coroutine.httpserver.handler.IApiHandler

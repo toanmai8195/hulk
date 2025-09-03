@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: Hulk Test API
+  description: API thử nghiệm với POST và GET endpoints
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:1995
+
+paths:
+  /test/post:
+    post:
+      summary: Test POST endpoint
+      operationId: postTest
+      description: Gửi request POST để test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Toan Mai"
+      responses:
+        '200':
+          description: Kết quả thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  greeting:
+                    type: string
+                example:
+                  "greeting": "Hello Toan Mai! I'm post"
+
+  /test/get:
+    get:
+      summary: Test GET endpoint
+      operationId: getTest
+      description: Gửi request GET để test
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Tham số query ví dụ
+      responses:
+        '200':
+          description: Kết quả thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  greeting:
+                    type: string
+                example:
+                  "greeting": "Hello Toan Mai! I'm post"

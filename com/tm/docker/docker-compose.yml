@@ -38,6 +38,7 @@ services:
       - "16020:16020"  # RegionServer RPC
       - "16030:16030"  # RegionServer Web UI
       - "2182:2181"
+      - "9090:9090"
     volumes:
       - hbase-data:/hbase-data
 
@@ -171,21 +172,6 @@ services:
         reservations:
           cpus: "1"
           memory: 256M
-
-  checkfriends:
-    image: com.tm.go.checkfriends:v1.0.0
-    container_name: checkfriends-app
-    ports:
-      - "8080:8080"
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 256M
-        reservations:
-          cpus: "1"
-          memory: 256M
-    restart: unless-stopped
 
 volumes:
   grafana-storage:
