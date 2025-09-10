@@ -1,10 +1,10 @@
-package com.tm.kotlin.service.counter.verticles.friendbycell
+package com.tm.kotlin.service.friend.verticles.friendbycell
 
 import com.tm.kotlin.common.hbase.IHBaseClient
-import com.tm.kotlin.service.counter.CounterMain
-import com.tm.kotlin.service.counter.CounterMain.Companion.CELL_ACTOR
-import com.tm.kotlin.service.counter.CounterMain.Companion.CELL_PARTNER
-import com.tm.kotlin.service.counter.CounterMain.Companion.RPS
+import com.tm.kotlin.service.friend.CounterMain
+import com.tm.kotlin.service.friend.CounterMain.Companion.CELL_ACTOR
+import com.tm.kotlin.service.friend.CounterMain.Companion.CELL_PARTNER
+import com.tm.kotlin.service.friend.CounterMain.Companion.RPS
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.DistributionSummary
 import io.micrometer.core.instrument.Timer

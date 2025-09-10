@@ -5,14 +5,18 @@ load("@tar.bzl", "mutate", "tar")
 kt_jvm_library(
     name = "counter_svc_lib",
     srcs = glob([
-        "verticles/friendbybitmap/*.kt",
-        "verticles/friendbycell/*.kt",
+        "verticles/consumer/*.kt",
+        "verticles/api/*.kt",
+        "dao/*.kt",
+        "handler/*.kt",
         "*.kt"
         ]),
     deps = [
         "//tools/plugins:dagger",
         "@maven//:io_vertx_vertx_core",
-        "@maven//:org_roaringbitmap_RoaringBitmap",
+        "@maven//:io_vertx_vertx_web",
+        "@maven//:org_apache_kafka_kafka_clients",
+        "@maven//:org_jetbrains_kotlinx_kotlinx_coroutines_core",
         "//com/tm/kotlin/common/hbase:hbase_client",
          "//com/tm/kotlin/common/mods/base",
          "//com/tm/kotlin/common/utils",
@@ -46,5 +50,5 @@ oci_image(
 oci_load(
     name = "counter_image_load",
     image = ":counter_image",
-    repo_tags = ["com.tm.java.counter_service:v1.0.2"],
+    repo_tags = ["com.tm.java.counter_service:v1.0.0"],
 )

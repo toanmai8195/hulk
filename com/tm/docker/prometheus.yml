@@ -25,3 +25,7 @@ scrape_configs:
   - job_name: 'httpserver_coroutine'
     static_configs:
       - targets: [ 'httpserver_coroutine:8088' ]
+
+  - job_name: 'cassandra'
+    static_configs:
+      - targets: [ 'cassandra:9042' ]

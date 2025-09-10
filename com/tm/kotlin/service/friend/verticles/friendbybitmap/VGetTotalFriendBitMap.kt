@@ -1,9 +1,9 @@
-package com.tm.kotlin.service.counter.verticles.friendbybitmap
+package com.tm.kotlin.service.friend.verticles.friendbybitmap
 
 import com.tm.kotlin.common.hbase.IHBaseClient
-import com.tm.kotlin.service.counter.CounterMain
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_ACTOR
-import com.tm.kotlin.service.counter.CounterMain.Companion.RPS
+import com.tm.kotlin.service.friend.CounterMain
+import com.tm.kotlin.service.friend.CounterMain.Companion.BITMAP_ACTOR
+import com.tm.kotlin.service.friend.CounterMain.Companion.RPS
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Timer
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry

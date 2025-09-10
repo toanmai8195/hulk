@@ -1,10 +1,10 @@
-package com.tm.kotlin.service.counter.verticles.friendbybitmap
+package com.tm.kotlin.service.friend.verticles.friendbybitmap
 
 import com.tm.kotlin.common.hbase.IHBaseClient
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_ACTOR
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_ACTOR_10K
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_PARTNER
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_PARTNER_10K
+import com.tm.kotlin.service.friend.CounterMain.Companion.BITMAP_ACTOR
+import com.tm.kotlin.service.friend.CounterMain.Companion.BITMAP_ACTOR_10K
+import com.tm.kotlin.service.friend.CounterMain.Companion.BITMAP_PARTNER
+import com.tm.kotlin.service.friend.CounterMain.Companion.BITMAP_PARTNER_10K
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
 import org.apache.hadoop.hbase.client.Put

@@ -1,12 +1,9 @@
-package com.tm.kotlin.service.counter.verticles.friendbybitmap
+package com.tm.kotlin.service.friend.verticles.friendbybitmap
 
 import com.tm.kotlin.common.hbase.IHBaseClient
-import com.tm.kotlin.service.counter.CounterMain
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_ACTOR
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_ACTOR_10K
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_PARTNER
-import com.tm.kotlin.service.counter.CounterMain.Companion.BITMAP_PARTNER_10K
-import com.tm.kotlin.service.counter.CounterMain.Companion.RPS
+import com.tm.kotlin.service.friend.CounterMain
+import com.tm.kotlin.service.friend.CounterMain.Companion.BITMAP_ACTOR
+import com.tm.kotlin.service.friend.CounterMain.Companion.RPS
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Timer
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
@@ -18,52 +15,44 @@ import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import javax.inject.Inject
 
-class VGetMutualFriendBitmap @Inject constructor(
+class VCheckFriendBitMap @Inject constructor(
     private val hBaseClient: IHBaseClient,
     private val registry: PrometheusMeterRegistry
 ) : AbstractVerticle() {
-    private val getMutualFriendsCounter: Counter = Counter.builder("mutual_friend_by_bitmap_counter")
-        .description("Number of getMutualFriends calls")
+    private val counterMetric: Counter = Counter.builder("check_friend_by_bitmap_counter")
+        .description("Number of check friend calls")
         .register(registry)
 
-    private val getMutualFriendsTimer = Timer
-        .builder("mutual_friend_by_bitmap_latency")
-        .description("Latency of getMutualFriends calls")
+    private val timerMetric = Timer
+        .builder("check_friend_by_bitmap_latency")
+        .description("Latency of check friend calls")
         .publishPercentiles(0.5, 0.9, 0.95, 0.99)
         .publishPercentileHistogram()
         .register(registry)
 
     override fun start(startPromise: Promise<Void>) {
         startPromise.complete()
-
         vertx.setPeriodic((1000 / RPS).toLong()) {
             CounterMain.executor.execute {
-                getMutualFriendsCounter.increment()
-                getMutualFriends(BITMAP_ACTOR_10K, BITMAP_PARTNER_10K)
+                counterMetric.increment()
+                val randomPhone = "0101000" + String.format("%04d", (0..7000).random())
+                println("BITMAP: $BITMAP_ACTOR & $randomPhone=${checkFriend(BITMAP_ACTOR, randomPhone)}")
             }
         }
     }
 
-    private fun getMutualFriends(actor: String, partner: String): Set<Int> {
-        return getMutualFriendsTimer.record<Set<Int>> {
+    private fun checkFriend(actor: String, partner: String): Boolean {
+        return timerMetric.record<Boolean> {
             val actorFriendsRs = hBaseClient.get(Get(genRowKey(actor).toByteArray()))
-            val partnerFriendsRs = hBaseClient.get(Get(genRowKey(partner).toByteArray()))
 
             val bitmapOfActor = actorFriendsRs.getValue(
                 "df".toByteArray(),
                 "bitmap".toByteArray()
             ).toBitmap()
 
-            val bitmapOfPartner = partnerFriendsRs.getValue(
-                "df".toByteArray(),
-                "bitmap".toByteArray()
-            ).toBitmap()
-
             registry.summary("friend_size", "source", this::class.simpleName).record(bitmapOfActor.count().toDouble())
-            registry.summary("friend_size", "source", this::class.simpleName).record(bitmapOfPartner.count().toDouble())
 
-            val rs = RoaringBitmap.and(bitmapOfActor, bitmapOfPartner)
-            rs.toSet()
+            bitmapOfActor.contains(partner.removePrefix("0").toInt())
         }
     }
 
