@@ -28,33 +28,19 @@ class StatefulCounterHandler<T> @Inject constructor(
 
     suspend fun increment(key: String, item: T? = null, delta: Long = 1): Long {
         if (delta == 0L) return getTotal(key)
-        
+
         val currentTime = System.currentTimeMillis()
-        
+
         // Update item count if specified
         if (item != null) {
-            val currentItemCount = getItemCount(key, item)
-            val newItemCount = (currentItemCount + delta).coerceAtLeast(
-                if (config.allowNegative) Long.MIN_VALUE else 0L
-            )
-            counterDao.put(key, config.columnFamily, itemQualifier(item), newItemCount)
+            counterDao.increment(key, config.columnFamily, itemQualifier(item), delta)
         }
-        
-        // Update total count
-        val currentTotal = getTotal(key)
-        val newTotal = (currentTotal + delta).coerceAtLeast(
-            if (config.allowNegative) Long.MIN_VALUE else 0L
-        )
-        
-        // Apply max value constraint
-        val finalTotal = if (config.maxValue != null && newTotal > config.maxValue!!) {
-            config.maxValue!!
-        } else newTotal
-        
-        counterDao.put(key, config.columnFamily, TOTAL_QUALIFIER, finalTotal)
+
+        // Update total count directly using incrementColumnValue and get new value
+        val newTotal = counterDao.increment(key, config.columnFamily, TOTAL_QUALIFIER, delta)
         counterDao.put(key, config.columnFamily, UPDATED_QUALIFIER, currentTime)
-        
-        return finalTotal
+
+        return newTotal
     }
 
     suspend fun decrement(key: String, item: T? = null, delta: Long = 1): Long = 
@@ -81,7 +67,7 @@ class StatefulCounterHandler<T> @Inject constructor(
                     if (count > 0 || config.allowNegative) {
                         itemCounts[item] = count
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     // Skip invalid items
                 }
             }
@@ -162,8 +148,8 @@ class StatefulCounterHandler<T> @Inject constructor(
             val newTotal = (currentTotal + totalDelta).coerceAtLeast(
                 if (config.allowNegative) Long.MIN_VALUE else 0L
             )
-            val finalTotal = if (config.maxValue != null && newTotal > config.maxValue!!) {
-                config.maxValue!!
+            val finalTotal = if (config.maxValue != null && newTotal > config.maxValue) {
+                config.maxValue
             } else newTotal
             
             counterDao.put(key, config.columnFamily, TOTAL_QUALIFIER, finalTotal)
@@ -179,10 +165,4 @@ class StatefulCounterHandler<T> @Inject constructor(
         }
     }
 
-    suspend fun getTopItems(key: String, limit: Int = 10): List<Pair<T, Long>> {
-        val itemCounts = getItemCounts(key)
-        return itemCounts.toList()
-            .sortedByDescending { it.second }
-            .take(limit)
-    }
 }

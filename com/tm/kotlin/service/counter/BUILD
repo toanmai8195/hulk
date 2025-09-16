@@ -21,6 +21,7 @@ kt_jvm_library(
          "//com/tm/kotlin/common/mods/base",
          "//com/tm/kotlin/common/utils",
          "//com/tm/kotlin/common/mods/monitor",
+         "@maven//:io_vertx_vertx_lang_kotlin_coroutines",
     ],
     visibility = ["//visibility:public"],
 )
