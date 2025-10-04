@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "clickhouse_producer_lib",
+    srcs = [
+        "main.go",
+        "models.go",
+    ],
+    importpath = "hulk/com/tm/go/clickhouse_producer",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_ibm_sarama//:sarama",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_binary(
+    name = "clickhouse_producer",
+    embed = [":clickhouse_producer_lib"],
+    visibility = ["//visibility:public"],
+)
