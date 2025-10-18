@@ -110,6 +110,10 @@ maven.install(
         "org.slf4j:slf4j-simple:2.0.17",
         "io.github.resilience4j:resilience4j-circuitbreaker:1.7.1",
         "io.github.resilience4j:resilience4j-kotlin:1.7.1",
+        "org.apache.flink:flink-streaming-java:1.17.2",
+        "org.apache.flink:flink-clients:1.17.2",
+        "org.apache.flink:flink-connector-kafka:3.0.2-1.17",
+        "org.apache.flink:flink-connector-base:1.17.2",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",
