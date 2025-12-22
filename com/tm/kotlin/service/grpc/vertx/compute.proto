@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package com.tm.kotlin.service.grpc.vertx;
+option java_package = "com.tm.kotlin.service.grpc.vertx";
+option java_multiple_files = true;
+
+service ComputeService {
+    rpc Compute(ComputeRequest) returns (ComputeResponse);
+}
+
+message ComputeRequest {
+    int64 input = 1;
+}
+
+message ComputeResponse {
+    int64 result = 1;
+    int64 processing_time_ms = 2;
+}

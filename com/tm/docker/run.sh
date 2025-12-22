@@ -33,3 +33,15 @@ docker compose up -d httpserver_coroutine
 
 echo "🐳 Running docker-compose httpclient_coroutine..."
 docker compose up -d httpclient_coroutine
+
+echo "🔥 Building Netty gRPC image with Bazel..."
+bazel run //com/tm/kotlin/service/grpc/netty:grpc_compute_image_load
+
+echo "🐳 Running docker-compose grpc_compute_netty_service..."
+docker compose up -d grpc_compute_netty_service
+
+echo "🔥 Building Vert.x gRPC image with Bazel..."
+bazel run //com/tm/kotlin/service/grpc/vertx:vertx_grpc_compute_image_load
+
+echo "🐳 Running docker-compose grpc_compute_vertx_service..."
+docker compose up -d grpc_compute_vertx_service

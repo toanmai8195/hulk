@@ -134,6 +134,38 @@ services:
           cpus: "1"
           memory: 256M
 
+  grpc_compute_netty_service:
+    image: com.tm.kotlin.grpc_compute_service:latest
+    environment:
+      - JAVA_OPTS=-XX:+UseContainerSupport -XX:ActiveProcessorCount=2
+    ports:
+      - "50051:50051"
+      - "9091:9091"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 5G
+        reservations:
+          cpus: "1"
+          memory: 3G
+
+  grpc_compute_vertx_service:
+    image: com.tm.kotlin.vertx_grpc_compute_service:latest
+    environment:
+      - JAVA_OPTS=-XX:+UseContainerSupport -XX:ActiveProcessorCount=2
+    ports:
+      - "50052:50052"
+      - "9093:9093"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 5G
+        reservations:
+          cpus: "1"
+          memory: 3G
+
   image_service:
     image: com.tm.java.image_service:v1.0.1
     ports:

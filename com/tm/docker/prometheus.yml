@@ -29,3 +29,19 @@ scrape_configs:
   - job_name: 'cassandra'
     static_configs:
       - targets: [ 'cassandra:9042' ]
+
+  - job_name: 'grpc_compute_netty'
+    static_configs:
+      - targets: [ 'grpc_compute_netty_service:9091' ]
+
+  - job_name: 'grpc_compute_vertx'
+    static_configs:
+      - targets: [ 'grpc_compute_vertx_service:9093' ]
+
+  - job_name: 'grpc_load_test_client'
+    static_configs:
+      - targets: [ 'host.docker.internal:9092' ]
+
+  - job_name: 'grpc_vertx_load_test_client'
+    static_configs:
+      - targets: [ 'host.docker.internal:9094' ]
