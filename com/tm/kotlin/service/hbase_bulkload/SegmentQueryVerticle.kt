@@ -12,9 +12,12 @@ import java.io.DataInputStream
 import javax.inject.Inject
 
 /**
- * Verticle 4: Queries user segments and verifies results
- * - Users 100,001-1,100,000 should return segment_v2
- * - Users 1-100,000 should be empty (marked with DeleteColumn)
+ * Phase 6: Queries user segments and verifies results after Phase 5
+ *
+ * Expected state after Phase 5:
+ * - Users 1-10M: EMPTY (V1 deleted, not in V2)
+ * - Users 10M-50M: V2 only (V1 deleted, V2 exists)
+ * - Users 50M-60M: V2 only (not in V1, V2 exists)
  */
 class SegmentQueryVerticle @Inject constructor(
     private val bulkLoadConfig: BulkLoadConfig,
@@ -26,99 +29,60 @@ class SegmentQueryVerticle @Inject constructor(
     }
 
     suspend fun execute() {
-        println("🚀 Starting SegmentQueryVerticle...")
+        println("🚀 Starting SegmentQueryVerticle (Phase 6: Final Verification)")
 
         try {
             val connection = ConnectionFactory.createConnection(hbaseConfig)
-            val table = connection.getTable(TableName.valueOf(bulkLoadConfig.hbaseTable))
 
-            // Test users from different ranges
+            // Test users from different ranges (50M scale)
             val testUsers = listOf(
-                1,          // Should be empty (deleted from V1)
-                50_000,     // Should be empty (deleted from V1)
-                100_000,    // Should be empty (deleted from V1)
-                100_001,    // Should have segment_v2
-                500_000,    // Should have segment_v2
-                1_000_000,  // Should have segment_v2
-                1_100_000   // Should have segment_v2
+                // V1 only (gap) - should be EMPTY after phase 5
+                1,
+                100_000,
+                5_000_000,
+                10_000_000,
+
+                // Overlap region - should have V2 only after phase 5
+                10_000_001,
+                20_000_000,
+                30_000_000,
+                40_000_000,
+                50_000_000,
+
+                // V2 only (gap) - should have V2
+                50_000_001,
+                55_000_000,
+                60_000_000
             )
 
-            println("\n📊 Querying user segments:")
-            println("=" .repeat(80))
+            // Validate results using QueryHelper
+            val (successCount, failureCount) = QueryHelper.validateAfterPhase5(
+                connection = connection,
+                tableName = bulkLoadConfig.hbaseTable,
+                columnFamily = bulkLoadConfig.columnFamily,
+                userIds = testUsers
+            )
 
-            var successCount = 0
-            var failureCount = 0
-
-            testUsers.forEach { userId ->
-                val rowKey = Bytes.toBytes(String.format("user_%010d", userId))
-                val get = Get(rowKey)
-                get.addFamily(Bytes.toBytes(bulkLoadConfig.columnFamily))
-
-                val result = table.get(get)
-
-                val hasV1 = result.containsColumn(
-                    Bytes.toBytes(bulkLoadConfig.columnFamily),
-                    Bytes.toBytes("segment_v1")
-                )
-
-                val hasV2 = result.containsColumn(
-                    Bytes.toBytes(bulkLoadConfig.columnFamily),
-                    Bytes.toBytes("segment_v2")
-                )
-
-                val expectedHasV2 = userId in 100_001..1_100_000
-                val expectedEmpty = userId in 1..100_000
-
-                val success = when {
-                    expectedHasV2 -> hasV2 && !hasV1
-                    expectedEmpty -> !hasV1 && !hasV2
-                    else -> true
-                }
-
-                val status = if (success) "✅" else "❌"
-                val segments = mutableListOf<String>()
-                if (hasV1) segments.add("V1")
-                if (hasV2) segments.add("V2")
-                val segmentInfo = if (segments.isEmpty()) "EMPTY" else segments.joinToString(", ")
-
-                println("$status User $userId: $segmentInfo")
-
-                if (success) successCount++ else failureCount++
-
-                // Show detailed segment info for some users
-                if (hasV2) {
-                    val v2Data = result.getValue(
-                        Bytes.toBytes(bulkLoadConfig.columnFamily),
-                        Bytes.toBytes("segment_v2")
-                    )
-                    if (v2Data != null) {
-                        val bitmap = RoaringBitmap()
-                        val dataInput = DataInputStream(v2Data.inputStream())
-                        bitmap.deserialize(dataInput)
-                        println("   └─ Segment V2 contains ${bitmap.cardinality} users")
-                        println("   └─ User $userId is in segment: ${bitmap.contains(userId)}")
-                    }
-                }
-            }
-
-            println("=" .repeat(80))
-            println("\n📈 Test Results:")
-            println("  ✅ Success: $successCount")
-            println("  ❌ Failure: $failureCount")
-            println("  📊 Total: ${testUsers.size}")
-
+            // Show overall results
             if (failureCount == 0) {
-                println("\n🎉 All tests passed! Inverted index segment rebuild works correctly.")
+                println("🎉 All tests passed! Inverted index segment rebuild works correctly.")
+                println("   - V1 users deleted: ✅")
+                println("   - V2 users added: ✅")
+                println("   - No version conflicts: ✅")
             } else {
-                println("\n⚠️  Some tests failed. Please review the results above.")
+                println("⚠️  Some tests failed ($failureCount failures)")
+                println("   Please review the results above.")
             }
 
-            // Additional verification: Count total rows
+            // Additional verification: Sample scan
             println("\n📊 Additional Statistics:")
+            val table = connection.getTable(TableName.valueOf(bulkLoadConfig.hbaseTable))
             countSegmentRows(table)
+            table.close()
 
             connection.close()
             println("\n✅ SegmentQueryVerticle completed successfully")
+
         } catch (e: Exception) {
             println("❌ Error in SegmentQueryVerticle: ${e.message}")
             e.printStackTrace()
@@ -127,40 +91,52 @@ class SegmentQueryVerticle @Inject constructor(
     }
 
     private fun countSegmentRows(table: org.apache.hadoop.hbase.client.Table) {
+        println("\n  Scanning sample rows from HBase...")
+
         val scan = Scan()
         scan.addFamily(Bytes.toBytes(bulkLoadConfig.columnFamily))
-        scan.limit = 10000 // Limit for performance
+        scan.limit = 100_000 // Sample 100k rows for stats
 
         var v1Count = 0
         var v2Count = 0
+        var emptyCount = 0
         var totalRows = 0
 
         val scanner = table.getScanner(scan)
+        val startTime = System.currentTimeMillis()
+
         scanner.forEach { result ->
             totalRows++
 
-            if (result.containsColumn(
-                    Bytes.toBytes(bulkLoadConfig.columnFamily),
-                    Bytes.toBytes("segment_v1")
-                )
-            ) {
-                v1Count++
-            }
+            val hasV1 = result.containsColumn(
+                Bytes.toBytes(bulkLoadConfig.columnFamily),
+                Bytes.toBytes("segment_v1")
+            )
 
-            if (result.containsColumn(
-                    Bytes.toBytes(bulkLoadConfig.columnFamily),
-                    Bytes.toBytes("segment_v2")
-                )
-            ) {
-                v2Count++
-            }
+            val hasV2 = result.containsColumn(
+                Bytes.toBytes(bulkLoadConfig.columnFamily),
+                Bytes.toBytes("segment_v2")
+            )
+
+            if (hasV1) v1Count++
+            if (hasV2) v2Count++
+            if (!hasV1 && !hasV2) emptyCount++
         }
 
         scanner.close()
 
-        println("  Total rows scanned: $totalRows (limited to 10,000)")
-        println("  Rows with segment_v1: $v1Count")
-        println("  Rows with segment_v2: $v2Count")
+        val duration = System.currentTimeMillis() - startTime
+
+        println("  Sample scan results (${duration}ms):")
+        println("    Total rows scanned:  ${"%,d".format(totalRows)}")
+        println("    Rows with V1:        ${"%,d".format(v1Count)}")
+        println("    Rows with V2:        ${"%,d".format(v2Count)}")
+        println("    Empty rows:          ${"%,d".format(emptyCount)}")
+
+        if (totalRows > 0) {
+            val v2Percentage = (v2Count.toDouble() / totalRows) * 100
+            println("    V2 coverage:         %.1f%%".format(v2Percentage))
+        }
     }
 
     override suspend fun stop() {

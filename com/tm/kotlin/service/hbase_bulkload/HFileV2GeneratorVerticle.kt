@@ -41,17 +41,22 @@ class HFileV2GeneratorVerticle @Inject constructor(
         try {
             // Read both segments from MinIO
             val segmentV1 = readSegmentFromMinio("segment_v1.bin")
-            println("✅ Read Segment V1 from MinIO (${segmentV1.cardinality} users)")
+            println("✅ Read Segment V1 from MinIO (${"%,d".format(segmentV1.cardinality)} users)")
+            println("   V1 range: ${segmentV1.first()} - ${segmentV1.last()}")
 
             val segmentV2 = readSegmentFromMinio("segment_v2.bin")
-            println("✅ Read Segment V2 from MinIO (${segmentV2.cardinality} users)")
+            println("✅ Read Segment V2 from MinIO (${"%,d".format(segmentV2.cardinality)} users)")
+            println("   V2 range: ${segmentV2.first()} - ${segmentV2.last()}")
 
             // Calculate differences
             val newUsersInV2 = RoaringBitmap.andNot(segmentV2, segmentV1)
             val usersToDelete = RoaringBitmap.andNot(segmentV1, segmentV2)
 
-            println("  New users in V2: ${newUsersInV2.cardinality}")
-            println("  Users to delete from V1: ${usersToDelete.cardinality}")
+            println("\n📊 Segment Analysis:")
+            println("   New users in V2:        ${"%,d".format(newUsersInV2.cardinality)}")
+            println("   Users to delete (gap):  ${"%,d".format(usersToDelete.cardinality)}")
+            println("   All V1 to delete:       ${"%,d".format(segmentV1.cardinality)}")
+            println("   All V2 to add:          ${"%,d".format(segmentV2.cardinality)}")
 
             // Generate HFiles for V2 puts and V1 deletes
             val hfilePath = generateHFilesV2(segmentV1, segmentV2)
@@ -133,13 +138,23 @@ class HFileV2GeneratorVerticle @Inject constructor(
 
         // Collect all user IDs that need to be written
         val allUserIds = RoaringBitmap.or(segmentV2, segmentV1)
+        println("\n✍️ Writing HFile V2 operations for ${"%,d".format(allUserIds.cardinality)} unique users...")
 
         var putCount = 0
         var deleteCount = 0
+        var debugCount = 0
 
         // Write operations in sorted row key order
         allUserIds.forEach { userId ->
             val rowKey = Bytes.toBytes(String.format("user_%010d", userId))
+
+            if (debugCount < 5) {
+                val inV1 = segmentV1.contains(userId)
+                val inV2 = segmentV2.contains(userId)
+                println("   Debug: userId=$userId, inV1=$inV1, inV2=$inV2")
+                debugCount++
+            }
+
             val regionIndex = findRegion(rowKey, writers.map { it.first })
 
             // Write DeleteColumn for ALL segment_v1 (to ensure only 1 version at a time)
@@ -163,8 +178,10 @@ class HFileV2GeneratorVerticle @Inject constructor(
             }
         }
 
-        println("  Added $deleteCount DeleteColumn operations for segment_v1")
-        println("  Added $putCount Put operations for segment_v2")
+        println("\n📊 Operations Summary:")
+        println("   DeleteColumn (V1): ${"%,d".format(deleteCount)} operations")
+        println("   Put (V2):          ${"%,d".format(putCount)} operations")
+        println("   Total operations:  ${"%,d".format(deleteCount + putCount)}")
 
         writers.forEach { it.second.close() }
 

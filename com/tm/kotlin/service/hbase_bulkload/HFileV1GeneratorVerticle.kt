@@ -32,7 +32,18 @@ class HFileV1GeneratorVerticle @Inject constructor(
         println("🚀 Starting HFile V1 Generation")
 
         val bitmap = readSegmentFromMinio("segment_v1.bin")
-        println("✅ Loaded bitmap: ${bitmap.cardinality} users")
+        println("✅ Loaded bitmap: ${"%,d".format(bitmap.cardinality)} users")
+
+        // Debug: Show first and last users
+        if (bitmap.cardinality > 0) {
+            val first = bitmap.first()
+            val last = bitmap.last()
+            println("   First user: $first")
+            println("   Last user: $last")
+            println("   Contains user 1: ${bitmap.contains(1)}")
+            println("   Contains user 100000: ${bitmap.contains(100000)}")
+            println("   Contains user 30000000: ${bitmap.contains(30000000)}")
+        }
 
         val hfilePath = generateHFiles(bitmap)
         println("✅ HFiles V1 generated at $hfilePath")
@@ -98,10 +109,24 @@ class HFileV1GeneratorVerticle @Inject constructor(
         }
 
         println("✍️ Writing rows...")
+
+        val regionCounts = IntArray(writers.size) { 0 }
+        var totalRows = 0
+
+        // Debug: Show first few rowKeys
+        var debugCount = 0
+
         bitmap.forEach { userId ->
             val rowKey = Bytes.toBytes(String.format("user_%010d", userId))
 
+            if (debugCount < 5) {
+                println("   Debug: userId=$userId, rowKey=${String(rowKey)}")
+                debugCount++
+            }
+
             val regionIdx = findRegion(rowKey, regionStarts.toList())
+            regionCounts[regionIdx]++
+            totalRows++
 
             val cell = CellUtil.createCell(
                 rowKey,
@@ -114,6 +139,14 @@ class HFileV1GeneratorVerticle @Inject constructor(
 
             writers[regionIdx].append(cell)
         }
+
+        println("\n📊 Rows written per region:")
+        regionCounts.forEachIndexed { idx, count ->
+            if (count > 0) {
+                println("   Region $idx: ${"%,d".format(count)} rows")
+            }
+        }
+        println("   Total: ${"%,d".format(totalRows)} rows\n")
 
         writers.forEach { it.close() }
         regionLocator.close()
