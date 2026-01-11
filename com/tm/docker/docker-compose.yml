@@ -41,6 +41,7 @@ services:
       - "9090:9090"
     volumes:
       - hbase-data:/hbase-data
+      - hbase-bulkload-data:/hbase_bulkload
 
   prometheus:
     image: prom/prometheus:latest
@@ -249,6 +250,55 @@ services:
       timeout: 10s
       retries: 5
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    ports:
+      - "9001:9000"   # API port (changed from 9000 to avoid conflict with ClickHouse)
+      - "9002:9001"   # Console UI port
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  hbase_bulkload:
+    image: com.tm.kotlin.hbase_bulkload:latest
+    container_name: hbase_bulkload
+    restart: no
+    depends_on:
+      - hbase
+      - minio
+    environment:
+      - PHASE=${PHASE:-}
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_BUCKET=hbase-bulkload
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - HBASE_TABLE=hulk:segment_index
+      - HBASE_COLUMN_FAMILY=cf
+      - HBASE_ZOOKEEPER_QUORUM=hbase
+      - HBASE_ZOOKEEPER_PORT=2181
+      - HDFS_URI=file:///
+      - JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+    volumes:
+      - hbase-bulkload-data:/hbase_bulkload
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 1G
+
 volumes:
   grafana-storage:
   cassandra-data:
@@ -256,3 +306,5 @@ volumes:
   rabbitmq-data:
   clickhouse-data:
   clickhouse-logs:
+  minio-data:
+  hbase-bulkload-data:

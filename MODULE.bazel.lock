@@ -476,7 +476,7 @@
     "@@rules_oci+//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "+TpcEqx+HTk5hj62gejKaF76B35Hh6+0ukcsMFxn/MQ=",
-        "usagesDigest": "uqf4JII7oM1K3nRA2psoN0ciY/cyMJF4Or75ORuEYY0=",
+        "usagesDigest": "hogb0re4xU3cwQ2kF78RwHUo8Wnrk4bj2oOAMqVwIPU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -565,6 +565,49 @@
               },
               "bzlmod_repository": "distroless_java",
               "reproducible": true
+            }
+          },
+          "eclipse_temurin_linux_amd64": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_pull",
+            "attributes": {
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/eclipse-temurin",
+              "identifier": "21-jre",
+              "platform": "linux/amd64",
+              "target_name": "eclipse_temurin_linux_amd64",
+              "bazel_tags": []
+            }
+          },
+          "eclipse_temurin_linux_arm64_v8": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_pull",
+            "attributes": {
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/eclipse-temurin",
+              "identifier": "21-jre",
+              "platform": "linux/arm64/v8",
+              "target_name": "eclipse_temurin_linux_arm64_v8",
+              "bazel_tags": []
+            }
+          },
+          "eclipse_temurin": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_alias",
+            "attributes": {
+              "target_name": "eclipse_temurin",
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/eclipse-temurin",
+              "identifier": "21-jre",
+              "platforms": {
+                "@@platforms//cpu:x86_64": "@eclipse_temurin_linux_amd64",
+                "@@platforms//cpu:arm64": "@eclipse_temurin_linux_arm64_v8"
+              },
+              "bzlmod_repository": "eclipse_temurin",
+              "reproducible": false
             }
           },
           "oci_crane_darwin_amd64": {
@@ -688,7 +731,10 @@
             "distroless_base_linux_arm64_v8",
             "distroless_java",
             "distroless_java_linux_amd64",
-            "distroless_java_linux_arm64_v8"
+            "distroless_java_linux_arm64_v8",
+            "eclipse_temurin",
+            "eclipse_temurin_linux_amd64",
+            "eclipse_temurin_linux_arm64_v8"
           ],
           "explicitRootModuleDirectDevDeps": [],
           "useAllRepos": "NO",
