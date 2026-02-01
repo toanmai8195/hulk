@@ -298,6 +298,18 @@ services:
         reservations:
           cpus: "1"
           memory: 1G
+  bitmap_loadtest:
+    image: com.tm.java.bitmap_loadtest:v1.0.0
+    ports:
+      - "1995:1995"
+      - "8089:8089"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 512M
 
 volumes:
   grafana-storage:
