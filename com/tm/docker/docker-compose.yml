@@ -42,12 +42,20 @@ services:
     volumes:
       - hbase-data:/hbase-data
       - hbase-bulkload-data:/hbase_bulkload
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 8G
+        reservations:
+          cpus: "1"
+          memory: 6G
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - "9090:9090"
+      - "9095:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
@@ -310,6 +318,25 @@ services:
         reservations:
           cpus: "1"
           memory: 512M
+
+  hbase_load_test:
+    image: com.tm.kotlin.hbase_load_test:latest
+    container_name: hbase_load_test
+    restart: no
+    depends_on:
+      - hbase
+    environment:
+      - JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+    ports:
+      - "8090:8089"  # Metrics endpoint
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4G
+        reservations:
+          cpus: "2"
+          memory: 2G
 
 volumes:
   grafana-storage:

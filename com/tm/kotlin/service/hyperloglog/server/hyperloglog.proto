@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package com.tm.kotlin.service.hyperloglog.server;
+
+option java_package = "com.tm.kotlin.service.hyperloglog.server";
+option java_multiple_files = true;
+
+service HyperLogLogService {
+    rpc AddSegments(AddSegmentsRequest) returns (AddSegmentsResponse);
+    rpc GetCardinality(GetCardinalityRequest) returns (GetCardinalityResponse);
+}
+
+message AddSegmentsRequest {
+    repeated string segments = 1;
+}
+
+message AddSegmentsResponse {
+    int64 estimated_cardinality_daily = 1;
+    int64 estimated_cardinality_hourly = 2;
+}
+
+message GetCardinalityRequest {
+    string time_bucket = 1;
+}
+
+message GetCardinalityResponse {
+    int64 estimated_cardinality = 1;
+    string time_bucket = 2;
+}
