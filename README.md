@@ -1,30 +1,30 @@
 # hulk
 
-Repo thử nghiệm cá nhân.
+Personal playground repo.
 
 ```
 com/tm/
 ├── server/   # Bazel module (Go, Kotlin/Java, Python toolchains)
 │   ├── MODULE.bazel
-│   ├── go/   # Thử nghiệm Go
-│   └── tools/rules/  # Macro build image (rules_oci), plugin Dagger
-└── app/      # Thử nghiệm ReactJS
+│   ├── go/   # Go experiments
+│   └── tools/rules/  # Image build macros (rules_oci), Dagger plugin
+└── app/      # ReactJS experiments
 ```
 
 ## Server (Bazel)
 
-Chạy mọi lệnh Bazel trong thư mục `com/tm/server`:
+Run all Bazel commands from `com/tm/server`:
 
 ```sh
 cd com/tm/server
-bazel test //go/...        # chạy toàn bộ test Go
+bazel test //go/...        # run all Go tests
 bazel build //go/...
-bazel run //:gazelle       # sinh/cập nhật BUILD cho Go
-bazel mod tidy             # dọn use_repo trong MODULE.bazel
+bazel run //:gazelle       # generate/update Go BUILD files
+bazel mod tidy             # clean up use_repo in MODULE.bazel
 ```
 
-Thêm dependency Go: sửa `com/tm/server/go.mod` (`go get ...`) rồi chạy `bazel mod tidy`.
+To add a Go dependency: update `com/tm/server/go.mod` (`go get ...`), then run `bazel mod tidy`.
 
 ## App (ReactJS)
 
-Code React đặt trong `com/tm/app`.
+React code lives in `com/tm/app`.
