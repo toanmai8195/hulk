@@ -1,6 +1,0 @@
-FROM eclipse-temurin:21-jre
-
-WORKDIR /app
-COPY hbase_bulkload_deploy.jar /app/app.jar
-
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
